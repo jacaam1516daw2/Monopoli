@@ -1,0 +1,11 @@
+.div{   
+    padding: 0px;
+    border: 1px solid #aaaaaa;
+    margin: 0px;
+    cursor: pointer;
+    float: left;
+}
+
+body{
+    background-color: #9de6dc;
+}
