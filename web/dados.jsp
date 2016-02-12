@@ -13,7 +13,7 @@
         <OL> <LI>Valor:
     <I><jsp:getProperty name="Dice" property="valor" /></I>
             <br>
-       <img src="img/${Dice.valor}.png">
+       <img src="images/${Dice.valor}.png">
             <br>
        <form>
         <input type="submit" value="Tirar">
