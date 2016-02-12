@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <base href="${pageContext.request.contextPath}">
+       <%-- <base href="${pageContext.request.contextPath}">--%>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="stylesheet" href="style/style.css" type="text/css">
         <title>Monopoli</title>
