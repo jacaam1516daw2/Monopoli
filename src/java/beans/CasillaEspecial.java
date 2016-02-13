@@ -1,6 +1,8 @@
 package beans;
 
-public class CasillaEspecial extends Casilla {
+import java.io.Serializable;
+
+public class CasillaEspecial extends Casilla implements Serializable {
     
     public CasillaEspecial(String nombre) {
         super(nombre);

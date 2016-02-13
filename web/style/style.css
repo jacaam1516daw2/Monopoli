@@ -1,11 +1,31 @@
-.div{   
-    padding: 0px;
-    border: 1px solid #aaaaaa;
-    margin: 0px;
-    cursor: pointer;
-    float: left;
+body {
+	background-color: #B7D3BD;
 }
 
-body{
-    background-color: #9de6dc;
+#dados {
+	margin: 2% 40%;
+}
+
+#estado {
+	margin: 5% 35%;
+}
+
+#tablero {
+	position: absolute;
+	top: 0;
+	left: 2%;
+}
+
+td, th, .special {
+	width: 145px;
+	height: 145px;
+}
+
+h2, p {
+	text-align: center;
+}
+
+.player {
+	width: 50px;
+	height: 75px;
 }

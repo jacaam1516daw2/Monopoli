@@ -1,6 +1,8 @@
 package beans;
 
-public class CasillaNormal extends Casilla {
+import java.io.Serializable;
+
+public class CasillaNormal extends Casilla implements Serializable {
     
     private double precio;
     private int casas;
