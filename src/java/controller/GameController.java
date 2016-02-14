@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import beans.Dice;
 import beans.Jugador;
 import beans.Partida;
 
@@ -90,6 +91,37 @@ public class GameController extends HttpServlet {
 				jugadores = partida.getJugadores();
 			}
 
+			// Recuperamos el valor del dado
+			Dice dice = new Dice();
+			int dado = dice.getValor();
+			partida.setDado(dado);
+
+			Integer turno = null;
+			// Gestionamos la posicion del jugador con el resultado de los dados
+			for (int i = 0; i < jugadores.size(); i++) {
+				if (jugadores.get(i).isTurno()) {
+					turno = i;
+					// Comprobamos que no se pase del maximo de casillas, si es
+					// asi nos quedamos con la diferencia
+					if (jugadores.get(i).getPosicion() + dado < 24) {
+						jugadores.get(i).setPosicion(jugadores.get(i).getPosicion() + dado);
+					} else {
+						int recalcular = jugadores.get(i).getPosicion() + dado;
+						jugadores.get(i).setPosicion(recalcular = recalcular - 24);
+
+					}
+				}
+			}
+
+			// Modificamos el flag de la clase jugador para pasar el runo al
+			// siguiente jugador
+			jugadores.get(turno).setTurno(Boolean.FALSE);
+			if (turno + 1 < jugadores.size()) {
+				jugadores.get(turno + 1).setTurno(Boolean.TRUE);
+			} else {
+				jugadores.get(0).setTurno(Boolean.TRUE);
+			}
+
 			// Seteamos las variables de session y de envio a la pantalla
 			partida.setJugadores(jugadores);
 			request.setAttribute("partida", partida);
@@ -102,7 +134,7 @@ public class GameController extends HttpServlet {
 		// creamos si es la primera vez
 		HttpSession session = request.getSession();
 		synchronized (session) { // no synchronized(this)
-
+			Boolean turno = Boolean.FALSE;
 			Partida partida = (Partida) session.getAttribute("partida");
 			if (partida == null) {
 				partida = new Partida();
@@ -113,6 +145,7 @@ public class GameController extends HttpServlet {
 			// Miramos si ya hay jugadores creados
 			if (partida.getJugadores() == null) {
 				jugadores = new ArrayList<>();
+				turno = Boolean.TRUE;
 			} else {
 				jugadores = partida.getJugadores();
 			}
@@ -120,7 +153,9 @@ public class GameController extends HttpServlet {
 			// Creamos un objeto jugador y recuperamos los parametros de
 			// interes
 			Jugador jugador = new Jugador();
+			jugador.setTurno(turno);
 			jugador.setNick(request.getParameter("nick"));
+			jugador.setPosicion(1);
 			jugador.setAvatar("images/player" + request.getParameter("avatar") + ".png");
 
 			// En caso de refresco de pantalla o rellamada miramos que no se
@@ -136,6 +171,11 @@ public class GameController extends HttpServlet {
 			if (!exist && !jugador.getNick().equals("") && jugador.getNick() != null) {
 				jugadores.add(jugador);
 			}
+
+			// Damos el primer valor al dado
+			Dice dice = new Dice();
+			int dado = dice.getValor();
+			partida.setDado(dado);
 
 			// Seteamos las variables de session y de envio a la pantalla
 			partida.setJugadores(jugadores);

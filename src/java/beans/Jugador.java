@@ -8,6 +8,8 @@ public class Jugador implements Serializable {
 	private float dinero;
 	private int estado;
 	private String avatar;
+	private int posicion;
+	private Boolean turno;
 
 	public String getColor() {
 		return color;
@@ -47,6 +49,22 @@ public class Jugador implements Serializable {
 
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
+	}
+
+	public int getPosicion() {
+		return posicion;
+	}
+
+	public void setPosicion(int posicion) {
+		this.posicion = posicion;
+	}
+
+	public Boolean isTurno() {
+		return turno;
+	}
+
+	public void setTurno(Boolean turno) {
+		this.turno = turno;
 	}
 
 }

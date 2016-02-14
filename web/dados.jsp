@@ -9,8 +9,9 @@
 </head>
 <body>
 
-	<jsp:useBean id="Dice" class="beans.Dice" />
-	<img src="images/${Dice.valor}.png">
+	<jsp:useBean id="partida" class="beans.Partida" scope="request"/>
+	<img src="images/${partida.dado}.png" width=100px height=100px>
+	<br><br><br>
 	<form action="GameController" method="post">
 		<input type="submit" value="Tirar" name="tirar">
 	</form>

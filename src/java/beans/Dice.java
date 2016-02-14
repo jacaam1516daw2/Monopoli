@@ -16,7 +16,7 @@ public class Dice implements Serializable {
     }
 
     public void setValor(int valor) {
-        this.valor = (int) Math.floor(Math.random() * 6 + 1);
+        this.valor = valor;
     }
 
     public void random() {
