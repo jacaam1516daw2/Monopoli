@@ -182,7 +182,7 @@ public class GameController extends HttpServlet {
 			request.setAttribute("partida", partida);
 			session.setAttribute("partida", partida);
 		}
-		return "/index.jsp";
+		return "/players.jsp";
 	}
 
 	/**
