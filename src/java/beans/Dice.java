@@ -11,7 +11,7 @@ public class Dice implements Serializable {
     }
 
     public int getValor() {
-        random();
+        setValor(random());
         return valor;
     }
 
@@ -19,9 +19,8 @@ public class Dice implements Serializable {
         this.valor = valor;
     }
 
-    public void random() {
-        this.valor = (int) Math.floor(Math.random() * 6 + 1);
-
+    public int random() {
+        return (int) Math.floor(Math.random() * 6 + 1);
     }
 
 }

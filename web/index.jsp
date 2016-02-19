@@ -7,6 +7,7 @@
 <title>Bienvenido al Monopoli</title>
 </head>
 <body>
+    <%@ page errorPage="/error/errorPage.jsp"%>
 	<form action="SessionController" method="post">
 		<h3>Bienvenido al Monopoli</h3>
 		<input type="submit" value="Nueva Partida" name="players"> 

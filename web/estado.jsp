@@ -9,6 +9,7 @@
 <title>Estado</title>
 </head>
 <body>
+    <%@ page errorPage="/error/errorPage.jsp"%>
 	<jsp:useBean id="partida" class="beans.Partida" scope="request" />
 	<table border=1>
 		<c:forEach items="${partida.jugadores}" var="jugador">
