@@ -1,0 +1,107 @@
+package utils;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import beans.CasillaNormal;
+import beans.Jugador;
+import beans.Partida;
+
+public class MonopoliUtils {
+	public static final float DINERO_INICIAL = 500f;
+	private static final int ESTADO_PAGAR = 1;
+	private static final int ESTADO_COMPRAR = 2;
+	private static final int ESTADO_EDIFICAR = 3;
+	private static final int ESTADO_CARCEL = 4;
+	private static final int ESTADO_COBRAR_IMPUESTO = 5;
+
+	Jugador propietario = new Jugador();
+
+	public void infoCasilla(HttpServletRequest request, Jugador jugador, Partida partida) {
+		int newPosicion = jugador.getNewPosicion();
+		int oldPosicion = jugador.getOldPosicion();
+
+		// Control pasar por la casilla de Salida
+		if (jugador.getDinero() != DINERO_INICIAL) {
+			if (oldPosicion >= 22 && newPosicion <= 5) {
+				jugador.setDinero(jugador.getDinero() + 20);
+			}
+		}
+
+		// Control casillas normales Comprar Pagar Edificar
+		if ((newPosicion >= 2 && newPosicion <= 4) || (newPosicion == 6) || (newPosicion == 7)
+				|| (newPosicion >= 9 && newPosicion <= 13) || (newPosicion == 15) || (newPosicion == 16)
+				|| (newPosicion >= 18 && newPosicion <= 20) || (newPosicion >= 22 && newPosicion <= 26)) {
+
+			propietario = propietarioCasillaNormal(partida.getJugadores(), newPosicion);
+			jugador.setEstado(compruebaEstado(jugador.getNick()));
+
+			if (jugador.getEstado() == ESTADO_PAGAR) {
+				jugador.setDinero(jugador.getDinero() - 30);
+				propietario.setDinero(propietario.getDinero() + 30);
+				jugador.setInfoPlayer(
+						"Acabas de pagar al propietario " + propietario.getNick() + " 30 euros por caer en su casilla");
+				propietario.setInfoPlayer("Acabas de cobrar del jugador " + jugador.getNick()
+						+ " 30 euros por que ha caido en una casilla tuya");
+
+			} else if (jugador.getEstado() == ESTADO_COMPRAR) {
+				jugador.setInfoPlayer("Si quieres comprar pulsa el botón comprar");
+				jugador.setActivaComprar("enabled");
+			} else if (jugador.getEstado() == ESTADO_EDIFICAR) {
+				jugador.setInfoPlayer("Si quieres edificar pulsa el botón comprar");
+				jugador.setActivaEdificar("enabled");
+			} else {
+				jugador.setActivaComprar("disabled");
+			}
+		}
+
+		// Control casillas Impuestos para pagar
+		if ((newPosicion == 5) || (newPosicion == 17)) {
+			jugador.setDinero(jugador.getDinero() - 20);
+			partida.setImpuesto(partida.getImpuesto() + 20);
+			jugador.setInfoPlayer("Acabas de pagar un impuesto de 20 euros");
+		}
+
+		// Casilla Policia vaya a la carcel
+		if (newPosicion == 21) {
+			jugador.setNewPosicion(8);
+			jugador.setEstado(ESTADO_CARCEL);
+			jugador.setTurnosSinTirar(3);
+			jugador.setInfoPlayer(
+					"Vaya directamente a la carcel sin pasar por la casilla de Salida y sin cobrar los 20 euros durante 3 turnos");
+		}
+
+		// Control casillas Cobrar Impuestos
+		if (newPosicion == 14) {
+			jugador.setEstado(ESTADO_COBRAR_IMPUESTO);
+			jugador.setInfoPlayer("Cobras todo los impuestos recaudados");
+			jugador.setDinero(jugador.getDinero() + partida.getImpuesto());
+		}
+	}
+
+	private int compruebaEstado(String nick) {
+		if ((propietario.getNick() != null) && (!propietario.getNick().equals(nick))) {
+			return ESTADO_PAGAR;
+		} else if ((propietario.getNick() != null) && (propietario.getNick().equals(nick))) {
+			return ESTADO_EDIFICAR;
+		} else {
+			return ESTADO_COMPRAR;
+		}
+	}
+
+	private Jugador propietarioCasillaNormal(List<Jugador> jugadores, int posicion) {
+		propietario = new Jugador();
+		for (Jugador propietario : jugadores) {
+			List<CasillaNormal> casillaNormales = propietario.getCasillaNormales();
+			if (casillaNormales != null) {
+				for (CasillaNormal casillaNormal : casillaNormales) {
+					if (casillaNormal.getNumero() == posicion) {
+						return propietario;
+					}
+				}
+			}
+		}
+		return propietario;
+	}
+}

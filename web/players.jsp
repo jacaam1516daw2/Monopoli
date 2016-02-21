@@ -24,7 +24,7 @@
 				<td>
 					<div id="pl"></div>
 				</td>
-			</tr>
+			</tr>			
 		</table>
 		<input type="submit" value="Nuevo Jugador" name="alta"> <input
 			type="submit" value="Jugar" name="jugar">
