@@ -147,6 +147,8 @@ public class GameController extends HttpServlet {
 				jugadores = partida.getJugadores();
 			}
 
+                        MonopoliUtils monopoliUtils = new MonopoliUtils();
+                        
 			for (int i = 0; i < jugadores.size(); i++) {
 				if (jugadores.get(i).getActivaComprar().equals("enabled")) {
 					jugadores.get(i).setActivaComprar("disabled");
@@ -154,7 +156,7 @@ public class GameController extends HttpServlet {
 					casillaNormal.setCasas(0);
 					casillaNormal.setNumero(jugadores.get(i).getNewPosicion());
 					casillaNormal.setPropietario(jugadores.get(i));
-					casillaNormal.setPrecio(30);
+					casillaNormal.setPrecio(monopoliUtils.calcularPrecio(jugadores.get(i).getNewPosicion()));
 					if(jugadores.get(i).getCasillaNormales() == null){
 						List<CasillaNormal> casillas = new ArrayList<>();
 						jugadores.get(i).setCasillaNormales(casillas);
@@ -213,13 +215,16 @@ public class GameController extends HttpServlet {
 						jugadores.get(i).setNewPosicion(recalcular = recalcular - 26);
 
 					}
+                                        monopoliUtils.infoCasilla(request, jugadores.get(i), partida);
 				}
-				monopoliUtils.infoCasilla(request, jugadores.get(i), partida);
 			}
 
 			// Modificamos el flag de la clase jugador para pasar el turno al
 			// siguiente jugador
 			jugadores.get(turno).setTurno(Boolean.FALSE);
+                        
+                        
+                        
 			if ((turno + 1 < jugadores.size()) && (jugadores.get(turno + 1).getTurnosSinTirar() == 0)) {
 				jugadores.get(turno + 1).setTurno(Boolean.TRUE);
 			} else if ((turno + 2 < jugadores.size()) && (jugadores.get(turno + 2).getTurnosSinTirar() == 0)) {
@@ -230,6 +235,10 @@ public class GameController extends HttpServlet {
 				jugadores.get(0).setTurno(Boolean.TRUE);
 			}
 
+                        for (Jugador jugador : jugadores)
+                            if (jugador.getDinero() < 0)
+                                jugadores.remove(jugador);
+                        
 			// Seteamos las variables de session y de envio a la pantalla
 			partida.setJugadores(jugadores);
 			request.setAttribute("partida", partida);
