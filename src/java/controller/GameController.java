@@ -89,9 +89,10 @@ public class GameController extends HttpServlet {
 		HttpSession session = request.getSession();
 		synchronized (session) { // no synchronized(this)
 
+                        // para la persistencia de los datos recupera el objeto partida de la sesion
 			Partida partida = (Partida) session.getAttribute("partida");
 			if (partida == null) {
-				partida = new Partida();
+				partida = new Partida(); // si no hay partida (pq es la primera vez q se llama a esta funcion) la crea
 			}
 
 			List<Jugador> jugadores = null;
@@ -103,6 +104,7 @@ public class GameController extends HttpServlet {
 				jugadores = partida.getJugadores();
 			}
 
+                        // SOLO SI YA HAY JUGADORES (SINO, SALTA EL BUCLE DIRECTAMENTE)
 			for (int i = 0; i < jugadores.size(); i++) {
 				if (jugadores.get(i).getActivaEdificar().equals("enabled")) {
 					jugadores.get(i).setActivaEdificar("disabled");
@@ -117,6 +119,7 @@ public class GameController extends HttpServlet {
 					}
 				}
 			}
+                        // ---------------------
 
 			// Seteamos las variables de session y de envio a la pantalla
 			partida.setJugadores(jugadores);
