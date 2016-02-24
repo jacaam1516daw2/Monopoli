@@ -9,16 +9,24 @@
 <title>Estado</title>
 </head>
 <body>
-    <%@ page errorPage="/error/errorPage.jsp"%>
-	<jsp:useBean id="partida" class="beans.Partida" scope="request" />
-	<table border=1>
-		<c:forEach items="${partida.jugadores}" var="jugador">
-			<tr>
-				<td class="player"><h1>Jugador:</h1></td>
-				<td class="player">${jugador.nick}</td>
-				<td class="player"><img src="${jugador.avatar}" width=50px height=75px></td>
-			</tr>
-		</c:forEach>
-	</table>
+	<form action="GameController" method="post">
+		<jsp:useBean id="partida" class="beans.Partida" scope="request" />
+		<table border=1>
+			<c:forEach items="${partida.jugadores}" var="jugador">
+				<tr>
+					<td class="player"><h3>Jugador:</h3>
+						<br>
+					<b>${jugador.nick}<br>${jugador.dinero}</b></td>
+					<td class="player"><img src="${jugador.avatar}" width=50px
+						height=75px></td>
+					<td class="player"><input type="submit" value="Comprar"
+						name="comprar" ${jugador.activaComprar}><br> <input
+						type="submit" value="Edificar" name="edificar"
+						${jugador.activaEdificar}></td>
+					<td class="player">${jugador.infoPlayer}</td>
+				</tr>
+			</c:forEach>
+		</table>
+	</form>
 </body>
 <body>

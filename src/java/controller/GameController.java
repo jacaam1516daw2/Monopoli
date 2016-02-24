@@ -12,9 +12,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import beans.Casilla;
+import beans.CasillaNormal;
 import beans.Dice;
 import beans.Jugador;
 import beans.Partida;
+import utils.MonopoliUtils;
 
 /**
  * Servlet implementation class GameController
@@ -49,6 +52,10 @@ public class GameController extends HttpServlet {
 			action = "tirar";
 		} else if (request.getParameter("alta") != null) {
 			action = "alta";
+		} else if (request.getParameter("comprar") != null) {
+			action = "comprar";
+		} else if (request.getParameter("edificar") != null) {
+			action = "edificar";
 		} else {
 
 		}
@@ -64,12 +71,102 @@ public class GameController extends HttpServlet {
 		case "tirar":
 			goToGame(request);
 			break;
+		case "comprar":
+			goToBuy(request);
+			break;
+		case "edificar":
+			goToBuild(request);
+			break;
 		default:
 			break;
 		}
 
 		RequestDispatcher rd = request.getRequestDispatcher(ruta);
 		rd.forward(request, response);
+	}
+
+	private void goToBuild(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		synchronized (session) { // no synchronized(this)
+
+			Partida partida = (Partida) session.getAttribute("partida");
+			if (partida == null) {
+				partida = new Partida();
+			}
+
+			List<Jugador> jugadores = null;
+
+			// Miramos si ya hay jugadores creados
+			if (partida.getJugadores() == null) {
+				jugadores = new ArrayList<>();
+			} else {
+				jugadores = partida.getJugadores();
+			}
+
+			for (int i = 0; i < jugadores.size(); i++) {
+				if (jugadores.get(i).getActivaEdificar().equals("enabled")) {
+					jugadores.get(i).setActivaEdificar("disabled");
+					for (CasillaNormal casillaNormal : jugadores.get(i).getCasillaNormales()) {
+						if (casillaNormal.getNumero() == jugadores.get(i).getNewPosicion()) {
+							if (casillaNormal.getCasas() < 5) {
+								casillaNormal.setCasas(casillaNormal.getCasas() + 1);
+								jugadores.get(i).setDinero(jugadores.get(i).getDinero() - 30);
+								jugadores.get(i).setInfoPlayer("Acabas de edificar en la casilla que has caido");
+							}
+						}
+					}
+				}
+			}
+
+			// Seteamos las variables de session y de envio a la pantalla
+			partida.setJugadores(jugadores);
+			request.setAttribute("partida", partida);
+			session.setAttribute("partida", partida);
+		}
+
+	}
+
+	private void goToBuy(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		synchronized (session) { // no synchronized(this)
+
+			Partida partida = (Partida) session.getAttribute("partida");
+			if (partida == null) {
+				partida = new Partida();
+			}
+
+			List<Jugador> jugadores = null;
+
+			// Miramos si ya hay jugadores creados
+			if (partida.getJugadores() == null) {
+				jugadores = new ArrayList<>();
+			} else {
+				jugadores = partida.getJugadores();
+			}
+
+			for (int i = 0; i < jugadores.size(); i++) {
+				if (jugadores.get(i).getActivaComprar().equals("enabled")) {
+					jugadores.get(i).setActivaComprar("disabled");
+					CasillaNormal casillaNormal = new CasillaNormal();
+					casillaNormal.setCasas(0);
+					casillaNormal.setNumero(jugadores.get(i).getNewPosicion());
+					casillaNormal.setPropietario(jugadores.get(i));
+					casillaNormal.setPrecio(30);
+					if(jugadores.get(i).getCasillaNormales() == null){
+						List<CasillaNormal> casillas = new ArrayList<>();
+						jugadores.get(i).setCasillaNormales(casillas);
+					}
+					jugadores.get(i).getCasillaNormales().add(casillaNormal);
+					jugadores.get(i).setDinero(jugadores.get(i).getDinero() - casillaNormal.getPrecio());
+					jugadores.get(i).setInfoPlayer("Acabas de comprar la casilla en la que has caido");
+				}
+			}
+
+			// Seteamos las variables de session y de envio a la pantalla
+			partida.setJugadores(jugadores);
+			request.setAttribute("partida", partida);
+			session.setAttribute("partida", partida);
+		}
 	}
 
 	private void goToGame(HttpServletRequest request) {
@@ -96,28 +193,36 @@ public class GameController extends HttpServlet {
 			int dado = dice.getValor();
 			partida.setDado(dado);
 
+			MonopoliUtils monopoliUtils = new MonopoliUtils();
+
 			Integer turno = null;
 			// Gestionamos la posicion del jugador con el resultado de los dados
 			for (int i = 0; i < jugadores.size(); i++) {
 				if (jugadores.get(i).isTurno()) {
 					turno = i;
-					// Comprobamos que no se pase del maximo de casillas, si es
-					// asi nos quedamos con la diferencia
-					if (jugadores.get(i).getPosicion() + dado < 24) {
-						jugadores.get(i).setPosicion(jugadores.get(i).getPosicion() + dado);
+					// Comprobamos que no se pase del maximo de casillas, si
+					// es asi nos quedamos con la diferencia
+					jugadores.get(i).setOldPosicion(jugadores.get(i).getNewPosicion());
+					if (jugadores.get(i).getNewPosicion() + dado < 26) {
+						jugadores.get(i).setNewPosicion(jugadores.get(i).getNewPosicion() + dado);
 					} else {
-						int recalcular = jugadores.get(i).getPosicion() + dado;
-						jugadores.get(i).setPosicion(recalcular = recalcular - 24);
+						int recalcular = jugadores.get(i).getNewPosicion() + dado;
+						jugadores.get(i).setNewPosicion(recalcular = recalcular - 26);
 
 					}
 				}
+				monopoliUtils.infoCasilla(request, jugadores.get(i), partida);
 			}
 
-			// Modificamos el flag de la clase jugador para pasar el runo al
+			// Modificamos el flag de la clase jugador para pasar el turno al
 			// siguiente jugador
 			jugadores.get(turno).setTurno(Boolean.FALSE);
-			if (turno + 1 < jugadores.size()) {
+			if ((turno + 1 < jugadores.size()) && (jugadores.get(turno + 1).getTurnosSinTirar() == 0)) {
 				jugadores.get(turno + 1).setTurno(Boolean.TRUE);
+			} else if ((turno + 2 < jugadores.size()) && (jugadores.get(turno + 2).getTurnosSinTirar() == 0)) {
+				jugadores.get(turno + 2).setTurno(Boolean.TRUE);
+			} else if ((turno + 3 < jugadores.size()) && (jugadores.get(turno + 3).getTurnosSinTirar() == 0)) {
+				jugadores.get(turno + 3).setTurno(Boolean.TRUE);
 			} else {
 				jugadores.get(0).setTurno(Boolean.TRUE);
 			}
@@ -154,8 +259,12 @@ public class GameController extends HttpServlet {
 			// interes
 			Jugador jugador = new Jugador();
 			jugador.setTurno(turno);
+			jugador.setActivaComprar("disabled");
+			jugador.setActivaEdificar("disabled");
+			jugador.setDinero(MonopoliUtils.DINERO_INICIAL);
+			jugador.setTurnosSinTirar(0);
 			jugador.setNick(request.getParameter("nick"));
-			jugador.setPosicion(1);
+			jugador.setNewPosicion(1);
 			jugador.setAvatar("images/player" + request.getParameter("avatar") + ".png");
 
 			// En caso de refresco de pantalla o rellamada miramos que no se
@@ -194,5 +303,4 @@ public class GameController extends HttpServlet {
 		// TODO Auto-generated method stub
 		doGet(request, response);
 	}
-
 }
