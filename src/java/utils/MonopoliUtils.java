@@ -58,8 +58,9 @@ public class MonopoliUtils {
             if (compruebaCasilla(newPosicion) == ESTADO_COBRAR_IMPUESTO) {
                 controlCasillaCobrar(jugador, partida);
             }
-
+            
             if (compruebaCasilla(newPosicion) < 0) {
+                System.out.println("bugbug madafaca");
                 // TODO: enviar a una página de error (?)
             }
 
@@ -148,7 +149,7 @@ public class MonopoliUtils {
                 jugador.setActivaComprar("enabled");
                 break;
             case ESTADO_EDIFICAR:
-                jugador.setInfoPlayer("Si quieres edificar pulsa el botón comprar");
+                jugador.setInfoPlayer("Si quieres edificar pulsa el botón edificar");
                 jugador.setActivaEdificar("enabled");
                 break;
             default:

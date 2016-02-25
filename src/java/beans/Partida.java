@@ -31,4 +31,5 @@ public class Partida implements Serializable {
 	public void setImpuesto(float impuesto) {
 		this.impuesto = impuesto;
 	}
+        
 }

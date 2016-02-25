@@ -30,6 +30,10 @@ h2, p {
 	height: 75px;
 }
 
+#current {
+    background-color: white;
+}
+
 .posicion {
 	position: relative;
 	float: right;

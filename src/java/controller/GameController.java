@@ -96,6 +96,7 @@ public class GameController extends HttpServlet {
 			}
 
 			List<Jugador> jugadores = null;
+                        MonopoliUtils monopoliUtils = new MonopoliUtils();
 
 			// Miramos si ya hay jugadores creados
 			if (partida.getJugadores() == null) {
@@ -112,8 +113,8 @@ public class GameController extends HttpServlet {
 						if (casillaNormal.getNumero() == jugadores.get(i).getNewPosicion()) {
 							if (casillaNormal.getCasas() < 5) {
 								casillaNormal.setCasas(casillaNormal.getCasas() + 1);
-								jugadores.get(i).setDinero(jugadores.get(i).getDinero() - 30);
-								jugadores.get(i).setInfoPlayer("Acabas de edificar en la casilla que has caido");
+								jugadores.get(i).setDinero(jugadores.get(i).getDinero() - monopoliUtils.calcularPrecioEdificio(jugadores.get(i).getNewPosicion(), casillaNormal.getCasas()));
+								jugadores.get(i).setInfoPlayer("Acabas de edificar en la casilla número " + casillaNormal.getNumero() + ".");
 							}
 						}
 					}
@@ -146,11 +147,10 @@ public class GameController extends HttpServlet {
 			} else {
 				jugadores = partida.getJugadores();
 			}
-
-                        MonopoliUtils monopoliUtils = new MonopoliUtils();
                         
+                        MonopoliUtils monopoliUtils = new MonopoliUtils();
 			for (int i = 0; i < jugadores.size(); i++) {
-				if (jugadores.get(i).getActivaComprar().equals("enabled")) {
+				if (jugadores.get(i).getActivaComprar().equals("enabled") && jugadores.get(i).isTurno()) {
 					jugadores.get(i).setActivaComprar("disabled");
 					CasillaNormal casillaNormal = new CasillaNormal();
 					casillaNormal.setCasas(0);
@@ -163,7 +163,7 @@ public class GameController extends HttpServlet {
 					}
 					jugadores.get(i).getCasillaNormales().add(casillaNormal);
 					jugadores.get(i).setDinero(jugadores.get(i).getDinero() - casillaNormal.getPrecio());
-					jugadores.get(i).setInfoPlayer("Acabas de comprar la casilla en la que has caido");
+					jugadores.get(i).setInfoPlayer("Acabas de comprar la casilla " + casillaNormal.getNumero() + ".");
 				}
 			}
 
@@ -215,15 +215,13 @@ public class GameController extends HttpServlet {
 						jugadores.get(i).setNewPosicion(recalcular = recalcular - 26);
 
 					}
-                                        monopoliUtils.infoCasilla(request, jugadores.get(i), partida);
 				}
+                                monopoliUtils.infoCasilla(request, jugadores.get(i), partida);
 			}
 
 			// Modificamos el flag de la clase jugador para pasar el turno al
 			// siguiente jugador
 			jugadores.get(turno).setTurno(Boolean.FALSE);
-                        
-                        
                         
 			if ((turno + 1 < jugadores.size()) && (jugadores.get(turno + 1).getTurnosSinTirar() == 0)) {
 				jugadores.get(turno + 1).setTurno(Boolean.TRUE);

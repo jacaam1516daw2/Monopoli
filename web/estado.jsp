@@ -11,12 +11,32 @@
 <body>
 	<form action="GameController" method="post">
 		<jsp:useBean id="partida" class="beans.Partida" scope="request" />
+                
+                <%-- INTENTO DE PRINTAR EL AVATAR DEL JUGADOR AL QUE LE TOCA
+                <c:forEach items="${partida.jugadores}" var="jugador">
+                    <c:if test="${jugador.isTurno()}">
+                        <img src="${jugador.avatar}" height="300px" width="200px" >
+                    </c:if>
+                </c:forEach>
+                --%>
+                
 		<table border=1>
 			<c:forEach items="${partida.jugadores}" var="jugador">
 				<tr>
-					<td class="player"><h3>Jugador:</h3>
-						<br>
-					<b>${jugador.nick}<br>${jugador.dinero}</b></td>
+                                    <%-- JOEL: control para mostrar el jugador al que le toca --%>
+                                    <c:choose>
+                                        <c:when test="${jugador.isTurno()}" >
+                                            <td id="current" class="player"><h3>Jugador:</h3>
+                                                    <br>
+                                            <b>${jugador.nick}<br>${jugador.dinero}</b></td>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <td class="player"><h3>Jugador:</h3>
+                                                    <br>
+                                            <b>${jugador.nick}<br>${jugador.dinero}</b></td>
+                                        </c:otherwise>
+                                    </c:choose>
+                                    <%-- --------------------- --%>        
 					<td class="player"><img src="${jugador.avatar}" width=50px
 						height=75px></td>
 					<td class="player"><input type="submit" value="Comprar"
