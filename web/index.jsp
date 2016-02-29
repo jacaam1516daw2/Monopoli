@@ -3,6 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="style/style.css" type="text/css">
+<link rel="shortcut icon" href="images/favicon.ico">
 <script lang="JavaScript" type="text/javascript" src="js/scripts.js"></script>
 <title>Bienvenido al Monopoli</title>
 </head>
