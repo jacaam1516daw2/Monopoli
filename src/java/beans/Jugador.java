@@ -3,8 +3,7 @@ package beans;
 import java.io.Serializable;
 import java.util.List;
 
-public class Jugador implements Serializable {
-	private String color;
+public class Jugador implements Serializable {	
 	private String nick;
 	private float dinero;
 	private int estado;
@@ -12,20 +11,13 @@ public class Jugador implements Serializable {
 	private int oldPosicion;
 	private int newPosicion;
 	private Boolean turno;
+	private int turnoIcon;
 	private String infoPlayer;
 	private String activaComprar;
 	private String activaEdificar;
 	private int turnosSinTirar;
 
-	private List<CasillaNormal> casillaNormales;
-
-	public String getColor() {
-		return color;
-	}
-
-	public void setColor(String color) {
-		this.color = color;
-	}
+	private List<CasillaNormal> casillaNormales;	
 
 	public String getNick() {
 		return nick;
@@ -121,6 +113,14 @@ public class Jugador implements Serializable {
 
 	public void setTurnosSinTirar(int turnosSinTirar) {
 		this.turnosSinTirar = turnosSinTirar;
+	}
+
+	public int getTurnoIcon() {
+		return turnoIcon;
+	}
+
+	public void setTurnoIcon(int turnoIcon) {
+		this.turnoIcon = turnoIcon;
 	}
 
 }

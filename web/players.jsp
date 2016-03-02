@@ -7,7 +7,6 @@
 <title>Bienvenido al Monopoli</title>
 </head>
 <body onload='preview();'>
-    <%@ page errorPage="/error/errorPage.jsp"%>
 	<form action="GameController" method="post">
 		<table>
 			<tr>

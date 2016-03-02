@@ -8,7 +8,7 @@
 <title>Dado</title>
 </head>
 <body>
-    <%@ page errorPage="/error/errorPage.jsp"%>
+
 	<jsp:useBean id="partida" class="beans.Partida" scope="request"/>
 	<img src="images/${partida.dado}.png" width=100px height=100px>
 	<br><br><br>

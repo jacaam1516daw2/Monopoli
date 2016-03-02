@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import beans.Casilla;
 import beans.CasillaNormal;
 import beans.Dice;
 import beans.Jugador;
@@ -89,10 +88,9 @@ public class GameController extends HttpServlet {
 		HttpSession session = request.getSession();
 		synchronized (session) { // no synchronized(this)
 
-                        // para la persistencia de los datos recupera el objeto partida de la sesion
 			Partida partida = (Partida) session.getAttribute("partida");
 			if (partida == null) {
-				partida = new Partida(); // si no hay partida (pq es la primera vez q se llama a esta funcion) la crea
+				partida = new Partida();
 			}
 
 			List<Jugador> jugadores = null;
@@ -103,23 +101,34 @@ public class GameController extends HttpServlet {
 			} else {
 				jugadores = partida.getJugadores();
 			}
-
-                        // SOLO SI YA HAY JUGADORES (SINO, SALTA EL BUCLE DIRECTAMENTE)
+			float edificar = 0;
 			for (int i = 0; i < jugadores.size(); i++) {
 				if (jugadores.get(i).getActivaEdificar().equals("enabled")) {
 					jugadores.get(i).setActivaEdificar("disabled");
 					for (CasillaNormal casillaNormal : jugadores.get(i).getCasillaNormales()) {
 						if (casillaNormal.getNumero() == jugadores.get(i).getNewPosicion()) {
 							if (casillaNormal.getCasas() < 5) {
+								MonopoliUtils monopoliUtils = new MonopoliUtils();
+								edificar = monopoliUtils.calcularPrecioEdificio(jugadores.get(i).getNewPosicion(),
+										casillaNormal.getCasas());
+								jugadores.get(i).setDinero(jugadores.get(i).getDinero() - edificar);
 								casillaNormal.setCasas(casillaNormal.getCasas() + 1);
-								jugadores.get(i).setDinero(jugadores.get(i).getDinero() - 30);
-								jugadores.get(i).setInfoPlayer("Acabas de edificar en la casilla que has caido");
+								if (casillaNormal.getCasas() == 5) {
+									jugadores.get(i).setInfoPlayer(
+											"Acabas de edificar un Hotel en la casilla que has caido por " + edificar
+													+ " euros");
+								} else {
+									jugadores.get(i).setInfoPlayer(
+											"Acabas de edificar una casa en la casilla que has caido por " + edificar
+													+ " euros");
+								}
+							} else {
+								jugadores.get(i).setInfoPlayer("No puedes edifcar más en la casilla que has caido");
 							}
 						}
 					}
 				}
 			}
-                        // ---------------------
 
 			// Seteamos las variables de session y de envio a la pantalla
 			partida.setJugadores(jugadores);
@@ -146,24 +155,30 @@ public class GameController extends HttpServlet {
 			} else {
 				jugadores = partida.getJugadores();
 			}
-
-                        MonopoliUtils monopoliUtils = new MonopoliUtils();
-                        
+			float precioCompra = 0;
 			for (int i = 0; i < jugadores.size(); i++) {
-				if (jugadores.get(i).getActivaComprar().equals("enabled")) {
-					jugadores.get(i).setActivaComprar("disabled");
-					CasillaNormal casillaNormal = new CasillaNormal();
-					casillaNormal.setCasas(0);
-					casillaNormal.setNumero(jugadores.get(i).getNewPosicion());
-					casillaNormal.setPropietario(jugadores.get(i));
-					casillaNormal.setPrecio(monopoliUtils.calcularPrecio(jugadores.get(i).getNewPosicion()));
-					if(jugadores.get(i).getCasillaNormales() == null){
-						List<CasillaNormal> casillas = new ArrayList<>();
-						jugadores.get(i).setCasillaNormales(casillas);
+				CasillaNormal casillaNormal = new CasillaNormal();
+				if (jugadores.get(i).getDinero() > casillaNormal.getPrecio()) {
+					if (jugadores.get(i).getActivaComprar().equals("enabled")) {
+						jugadores.get(i).setActivaComprar("disabled");
+						casillaNormal.setCasas(0);
+						casillaNormal.setNumero(jugadores.get(i).getNewPosicion());
+						casillaNormal.setPropietario(jugadores.get(i));
+						MonopoliUtils monopoliUtils = new MonopoliUtils();
+						precioCompra = monopoliUtils.calcularPrecio(jugadores.get(i).getNewPosicion());
+						casillaNormal.setPrecio(precioCompra);
+						if (jugadores.get(i).getCasillaNormales() == null) {
+							List<CasillaNormal> casillas = new ArrayList<>();
+							jugadores.get(i).setCasillaNormales(casillas);
+						}
+						jugadores.get(i).getCasillaNormales().add(casillaNormal);
+						jugadores.get(i).setDinero(jugadores.get(i).getDinero() - casillaNormal.getPrecio());
+						jugadores.get(i).setInfoPlayer(
+								"Acabas de comprar la casilla en la que has caido por " + precioCompra + " euros");
 					}
-					jugadores.get(i).getCasillaNormales().add(casillaNormal);
-					jugadores.get(i).setDinero(jugadores.get(i).getDinero() - casillaNormal.getPrecio());
-					jugadores.get(i).setInfoPlayer("Acabas de comprar la casilla en la que has caido");
+				} else {
+					jugadores.get(i).setActivaComprar("disabled");
+					jugadores.get(i).setInfoPlayer("No tienes suficiente dinero para comprar la casilla actual");
 				}
 			}
 
@@ -200,45 +215,53 @@ public class GameController extends HttpServlet {
 
 			MonopoliUtils monopoliUtils = new MonopoliUtils();
 
-			Integer turno = null;
 			// Gestionamos la posicion del jugador con el resultado de los dados
-			for (int i = 0; i < jugadores.size(); i++) {
-				if (jugadores.get(i).isTurno()) {
-					turno = i;
-					// Comprobamos que no se pase del maximo de casillas, si
-					// es asi nos quedamos con la diferencia
-					jugadores.get(i).setOldPosicion(jugadores.get(i).getNewPosicion());
-					if (jugadores.get(i).getNewPosicion() + dado < 26) {
-						jugadores.get(i).setNewPosicion(jugadores.get(i).getNewPosicion() + dado);
-					} else {
-						int recalcular = jugadores.get(i).getNewPosicion() + dado;
-						jugadores.get(i).setNewPosicion(recalcular = recalcular - 26);
+			for (Jugador jugador : jugadores) {
+				jugador.setActivaComprar("disabled");
+				jugador.setActivaEdificar("disabled");
+				jugador.setInfoPlayer("");
+				if (jugador.isTurno()) {
+					if (jugador.getTurnosSinTirar() == 0) {
+						// Comprobamos que no se pase del maximo de casillas, si
+						// es asi nos quedamos con la diferencia
+						jugador.setOldPosicion(jugador.getNewPosicion());
+						if (jugador.getNewPosicion() + dado <= 26) {
+							jugador.setNewPosicion(jugador.getNewPosicion() + dado);
+						} else {
+							int recalcular = jugador.getNewPosicion() + dado;
+							jugador.setNewPosicion(recalcular = recalcular - 26);
 
+						}
+						monopoliUtils.infoCasilla(request, jugador, partida);
+					} else {
+						jugador.setTurnosSinTirar(jugador.getTurnosSinTirar() - 1);
+						jugador.setInfoPlayer(
+								"Estas en la carcel aun te queda " + jugador.getTurnosSinTirar() + " turnos sin tirar");
 					}
-                                        monopoliUtils.infoCasilla(request, jugadores.get(i), partida);
 				}
 			}
 
-			// Modificamos el flag de la clase jugador para pasar el turno al
-			// siguiente jugador
-			jugadores.get(turno).setTurno(Boolean.FALSE);
-                        
-                        
-                        
-			if ((turno + 1 < jugadores.size()) && (jugadores.get(turno + 1).getTurnosSinTirar() == 0)) {
-				jugadores.get(turno + 1).setTurno(Boolean.TRUE);
-			} else if ((turno + 2 < jugadores.size()) && (jugadores.get(turno + 2).getTurnosSinTirar() == 0)) {
-				jugadores.get(turno + 2).setTurno(Boolean.TRUE);
-			} else if ((turno + 3 < jugadores.size()) && (jugadores.get(turno + 3).getTurnosSinTirar() == 0)) {
-				jugadores.get(turno + 3).setTurno(Boolean.TRUE);
-			} else {
-				jugadores.get(0).setTurno(Boolean.TRUE);
+			// Controlamos los turnos seteando la variable booleana en la
+			// siguiete posicion
+			// En caso de que se produzca una excepcion
+			// IndexOutOfBoundsException es que hemos llegado
+			// al final del array de jugadores y eso significa que es el truno
+			// del primer jugador de ahi el catch
+			try {
+				for (int i = 0; i < jugadores.size(); i++) {
+					if (jugadores.get(i).isTurno()) {
+						jugadores.get(i).setTurno(false);
+						jugadores.get(i).setTurnoIcon(0);
+						jugadores.get(i + 1).setTurno(true);
+						jugadores.get(i + 1).setTurnoIcon(1);
+						break;
+					}
+				}
+			} catch (IndexOutOfBoundsException e) {
+				jugadores.get(0).setTurnoIcon(1);
+				jugadores.get(0).setTurno(true);
 			}
 
-                        for (Jugador jugador : jugadores)
-                            if (jugador.getDinero() < 0)
-                                jugadores.remove(jugador);
-                        
 			// Seteamos las variables de session y de envio a la pantalla
 			partida.setJugadores(jugadores);
 			request.setAttribute("partida", partida);
@@ -271,9 +294,10 @@ public class GameController extends HttpServlet {
 			// interes
 			Jugador jugador = new Jugador();
 			jugador.setTurno(turno);
+			jugador.setTurnoIcon(turno ? 1 : 0);
 			jugador.setActivaComprar("disabled");
 			jugador.setActivaEdificar("disabled");
-			jugador.setDinero(MonopoliUtils.DINERO_INICIAL);
+			jugador.setDinero(MonopoliUtils.DINERO_INICIAL * 2);
 			jugador.setTurnosSinTirar(0);
 			jugador.setNick(request.getParameter("nick"));
 			jugador.setNewPosicion(1);

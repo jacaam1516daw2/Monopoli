@@ -11,7 +11,7 @@
 	<jsp:useBean id="partida" class="beans.Partida" scope="request" />
 	<jsp:useBean id="casillaNormal" class="beans.CasillaNormal"
 		scope="request" />
-        <jsp:useBean id="mu" class="utils.MonopoliUtils" scope="request" />
+	<jsp:useBean id="mu" class="utils.MonopoliUtils" scope="request" />
 	<%-- redireccion en caso de error --%>
 	<%@ page errorPage="/error/errorPage.jsp"%>
 	<table border="1" align='center'>
@@ -51,7 +51,7 @@
 				<h2>
 					Plaza <br> Urquinaona
 				</h2>
-                            <p>${mu.calcularPrecio(15)}&euro;</p>15</th>
+				<p>${mu.calcularPrecio(15)}&euro;</p>15</th>
 			<th><c:forEach items="${partida.jugadores}" var="jugador">
 					<c:if test="${jugador.newPosicion == 16}">
 						<div class="posicion" id="pos16">

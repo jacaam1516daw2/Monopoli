@@ -6,7 +6,6 @@ public class CasillaNormal implements Serializable {
 
 	private float precio;
 	private int casas;
-	private ColorEnum color;
 	private Jugador propietario;
 	private int numero;
 	private String nombre;
@@ -43,26 +42,8 @@ public class CasillaNormal implements Serializable {
 		this.casas = casas;
 	}
 
-	public ColorEnum getColor() {
-		return color;
-	}
-
-	public void setColor(ColorEnum color) {
-		this.color = color;
-	}
-
 	public CasillaNormal() {
 		super();
-	}
-
-	/**
-	 * Cálculo dinámico del precio de las casillas. Falta por ponerle que cuente
-	 * las casas también.
-	 * 
-	 * @return
-	 */
-	private double calcularPrecio() {
-		return 100 * color.getValor();
 	}
 
 	public Jugador getPropietario() {
