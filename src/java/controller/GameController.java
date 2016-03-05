@@ -178,7 +178,7 @@ public class GameController extends HttpServlet {
 					}
 				} else {
 					jugadores.get(i).setActivaComprar("disabled");
-					jugadores.get(i).setInfoPlayer("No tienes suficiente dinero para comprar la casilla actual");
+					jugadores.get(i).setInfoPlayer("No tienes suficiente dinero para comprar la casilla " + casillaNormal.getNumero());
 				}
 			}
 
