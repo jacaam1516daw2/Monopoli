@@ -52,9 +52,9 @@ public class MonopoliUtils {
 				jugador.setDinero(jugador.getDinero() - pago);
 				propietario.setDinero(propietario.getDinero() + pago);
 				jugador.setInfoPlayer("Acabas de pagar al propietario " + propietario.getNick() + " " + pago
-						+ " euros por caer en su casilla");
+						+ " euros por caer en la casilla " + propietario.casillaActual(newPosicion));
 				propietario.setInfoPlayer("Acabas de cobrar del jugador " + jugador.getNick() + " " + pago
-						+ " euros por que ha caido en una casilla tuya");
+						+ " euros por que ha caido en la casilla " + propietario.casillaActual(newPosicion));
 
 			} else if (jugador.getEstado() == ESTADO_COMPRAR) {
 				jugador.setInfoPlayer("Si quieres comprar pulsa el botón comprar");

@@ -9,7 +9,7 @@ public class CasillaNormal implements Serializable {
 	private Jugador propietario;
 	private int numero;
 	private String nombre;
-
+        
 	public void setNumero(int numero) {
 		this.numero = numero;
 	}

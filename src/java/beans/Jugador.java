@@ -19,6 +19,13 @@ public class Jugador implements Serializable {
 
 	private List<CasillaNormal> casillaNormales;	
 
+        public String casillaActual(int pos) {
+            for (CasillaNormal casilla : casillaNormales)
+                if(casilla.getNumero() == pos)
+                    return String.valueOf(pos);
+            return casillaNormales.get(1).getNombre();
+        }
+        
 	public String getNick() {
 		return nick;
 	}

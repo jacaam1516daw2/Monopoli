@@ -174,7 +174,7 @@ public class GameController extends HttpServlet {
 						jugadores.get(i).getCasillaNormales().add(casillaNormal);
 						jugadores.get(i).setDinero(jugadores.get(i).getDinero() - casillaNormal.getPrecio());
 						jugadores.get(i).setInfoPlayer(
-								"Acabas de comprar la casilla en la que has caido por " + precioCompra + " euros");
+								"Acabas de comprar la casilla " + casillaNormal.getNumero() + " por " + precioCompra + " euros");
 					}
 				} else {
 					jugadores.get(i).setActivaComprar("disabled");
@@ -198,7 +198,7 @@ public class GameController extends HttpServlet {
 			if (partida == null) {
 				partida = new Partida();
 			}
-
+                        
 			List<Jugador> jugadores = null;
 
 			// Miramos si ya hay jugadores creados
@@ -258,6 +258,7 @@ public class GameController extends HttpServlet {
 					}
 				}
 			} catch (IndexOutOfBoundsException e) {
+                                partida.incrmentaRonda();
 				jugadores.get(0).setTurnoIcon(1);
 				jugadores.get(0).setTurno(true);
 			}

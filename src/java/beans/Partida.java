@@ -7,8 +7,12 @@ public class Partida implements Serializable {
 	private List<Jugador> jugadores;
 	private int dado;
 	private float impuesto = 0f;
-	private int turno = 0;
+	private int ronda = 1;
 	
+        public void incrmentaRonda() {
+            this.setRonda(getRonda()+1);
+        }
+        
 	public List<Jugador> getJugadores() {
 		return jugadores;
 	}
@@ -33,11 +37,11 @@ public class Partida implements Serializable {
 		this.impuesto = impuesto;
 	}
 
-	public int getTurno() {
-		return turno;
+	public int getRonda() {
+		return ronda;
 	}
 
-	public void setTurno(int turno) {
-		this.turno = turno;
+	public void setRonda(int ronda) {
+		this.ronda = ronda;
 	}
 }

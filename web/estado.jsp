@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="t" tagdir="/WEB-INF/tags/" %> 
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,6 +14,7 @@
 		<jsp:useBean id="partida" class="beans.Partida" scope="request" />
 		<jsp:useBean id="casillaNormal" class="beans.CasillaNormal"
 			scope="request" />
+                <t:turnos turno="${partida.ronda}" />
 		<table border=1>
 			<c:forEach items="${partida.jugadores}" var="jugador">
 				<tr>
