@@ -6,7 +6,7 @@
 <script lang="JavaScript" type="text/javascript" src="js/scripts.js"></script>
 <title>Bienvenido al Monopoli</title>
 </head>
-<body>
+<body align="center">
 	<form action="SessionController" method="post">
 		<h3>Bienvenido al Monopoli</h3>
 		<input type="submit" value="Nueva Partida" name="players"> 

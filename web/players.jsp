@@ -7,6 +7,7 @@
 <title>Bienvenido al Monopoli</title>
 </head>
 <body onload='preview();'>
+    <div align="center">
 	<form action="GameController" method="post">
 		<table>
 			<tr>
@@ -29,5 +30,6 @@
 		<input type="submit" value="Nuevo Jugador" name="alta"> <input
 			type="submit" value="Jugar" name="jugar">
 	</form>
+    </div>
 </body>
 </html>
