@@ -1,7 +1,8 @@
 package beans;
 
 import java.io.Serializable;
-
+import javax.ejb.Stateless;
+@Stateless
 public class Dice implements Serializable {
 
     public int valor = 0;

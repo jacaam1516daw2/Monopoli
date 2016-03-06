@@ -2,7 +2,8 @@ package beans;
 
 import java.io.Serializable;
 import java.util.List;
-
+import javax.ejb.Stateless;
+@Stateless
 public class Jugador implements Serializable {	
 	private String nick;
 	private float dinero;
